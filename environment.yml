@@ -1,0 +1,29 @@
+name: latentppi
+
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  - python=3.11
+  - pip
+  - zstd
+  - seqkit
+  - h5py
+
+  - pip:
+      # Screen configuration and data processing
+      - pyyaml
+      - numpy
+      - pandas
+      - tqdm
+
+      # Query MSA generation
+      - "colabfold[alphafold]"
+
+      # Model training and evaluation
+      - torch
+      - scipy
+      - scikit-learn
+      - matplotlib
+      - wandb

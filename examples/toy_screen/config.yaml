@@ -1,0 +1,79 @@
+# One synthetic target and 50 candidates; replace AF3 resources and cluster settings for your site.
+# Paths under inputs/af3 are relative to this YAML. paths.* are relative to output_base,
+# except script_dir. Checkpoint paths are relative to script_dir.
+inputs:
+  conda_env: latentppi
+  fasta_file: target_small.fasta
+  output_base: ./run_latent
+  proteome_msa_dir: ./proteome
+  af3_num_recycles: 1
+  af3_num_diffusion_samples: 1
+  max_identity: 95.0
+  filter_non_standard: true
+  force: false
+  recreate_manifest: false
+  recreate_commands: false
+  skip_if_msa_exists: true
+
+paths:
+  script_dir: ../..
+  cmd_file: af3_cmds.txt
+  af3_input_dir: ./af3_inputs
+  af3_output_dir: ./af3_predictions
+  summary_tsv: ''
+  shard_dir: ./h5_shards
+  ipsae_outroot: ./ipsae_scores_af3
+  ipsae_summary: ./ipsae_summary_af3.csv
+
+af3:
+  image: /path/to/af3_latentppi_sf_v303.sif
+  model_parameters_dir: /path/to/af3/weights
+  databases_dir: /path/to/af3/databases
+
+runner: latent
+scorer:
+  rank_by: ipSAE_d0dom
+  threshold: 0.9
+  models:
+    ipSAE_d0dom: {path: models/checkpoint/latentppi_max_ipSAE_d0dom__emb-r1_score-r1_model.pt}
+  # predict_metrics: [ipSAE_d0dom]  # Omit to predict all configured models.
+  # manifest_path: models/manifest.json  # Authoritative escape hatch; models ignored.
+
+stages:
+  save_embeddings: false
+  run_ipsae_parse: true
+  run_pool: false
+  run_compress: true
+  pool_seed: 1
+  keep_npz: false
+  compress_embeddings: false
+
+cluster:
+  max_total_residues: null  # Optional combined-chain cap; e.g. 3000 skips lengths >3000.
+  job_name: ''  # Optional prefix, e.g. crebrf-wt -> crebrf-wt-array; empty keeps generated names.
+  screen_cluster: ''  # Optional Slurm cluster for GPU screening (either runner).
+  inputs_cluster: ''  # Optional Slurm cluster for preparation/dispatcher/collector.
+  screen_partition: your_gpu  # Partition(s) where AF3 screening jobs run; e.g. your_gpu,your_gpu_alt.
+  cpu_only: false  # Set true with CPU screen partitions and a CPU-capable AF3 image.
+  gres: 'gpu:1'
+  cpus_per_task: 4
+  dispatch_mode: chained  # Submit one batch and continuation, then exit.
+  dispatcher_cpus_per_task: 1
+  dispatcher_time_limit: '01:00:00'  # Per invocation, not the entire screen.
+  max_concurrent_tasks: 4  # Maximum simultaneously running screen tasks, not batch size.
+  user_queue_budget: 50  # All your queued/running tasks, including other jobs; null disables this check.
+  reserved_queue_slots: 2  # Slots kept unused within user_queue_budget; ignored when budget is null.
+  poll_interval: 60  # Seconds between quota/completion checks.
+  offset: 0
+  max_array_size: 1001  # Exclusive upper bound on local task index.
+  array_spec_limit: 1024
+  time_limit: '24:00:00'
+  inputs_partition: your_cpu
+  mail_user: ''
+
+output:
+  metrics_dir: ./metrics
+  refresh_seconds: 300
+  known_interactors: ''  # Optional NP accession list, relative to this YAML.
+  write_summary: true
+  legacy_csv: false

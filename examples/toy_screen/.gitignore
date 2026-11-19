@@ -1,0 +1,7 @@
+/run/
+/run_latent/
+
+# Keep the renamed example inputs visible despite repository-wide data ignores.
+!/target_small.fasta
+!/query_msa/target_small.a3m
+!/proteome/*.a3m

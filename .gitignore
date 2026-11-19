@@ -1,0 +1,104 @@
+# large outputs and generated artifacts
+*.pdb
+*.cif
+*.a3m
+*.pkl
+*.npz
+*.h5
+*.faa
+*.json.gz
+*.bibtex
+*.fa
+*.fasta
+9606*
+
+# logs and scheduler output
+*.out
+*.err
+*.log
+slurm-*.txt
+logs/
+
+# generated pipeline files
+jobs.tsv
+af3_cmds*.txt
+boltz_cmds*.txt
+colab_cmds*.txt
+colab_*_a3ms.tsv
+*_metadata.csv
+runtime_manifest.tsv
+
+# generated folders
+dataset/
+
+# run directories and experiments
+screen*/
+systems/large/
+systems/medium/
+systems/small/
+systems/predictions/
+systems/results/
+systems/logs/
+systems/logs2/
+/check*/
+test_*/
+multimer_test/
+spoc_test/
+time_comp/
+SPOC/
+wandb/
+models/*.pt
+models/*.tsv
+models/figures/
+models/predictions*/
+models/sweep_results/
+models/sklearn_results/
+models/recall_map/
+models/audit_*/
+
+# database downloads
+sequence_mapping/*.txt
+stringdb_human/*.txt
+databases/*.txt
+
+# caches and environments
+.ipynb_checkpoints/
+__pycache__/
+.env.*
+.netrc
+*.sif
+
+# archives and local scratch
+scripts_backup/
+useless_scripts/
+file.txt
+stream.txt
+
+# Local runs, scheduler records, and downloaded dataset artifacts
+af3_predictions/
+af3_inputs/
+latentppi_runs/
+slurm_logs/
+*.bak_paths
+/.config-test-*/
+/.workflow-test-*/
+/.checkpoint-test-*/
+/.metrics-test-*/
+.pytest_cache/
+/.vscode/
+/.agents/
+/.aws/
+/.codex/
+/data_*r_*s/
+/pilot/
+/stopping/
+/dataset_build/mmseqs/
+/dataset_build/mmseqs-linux-*.tar.gz
+/dataset_build/ppi_dataset/*
+!/dataset_build/ppi_dataset/dataset_summary.tsv
+/af3_job_durations.txt
+/af3_failed_jobs.txt
+/af3_patched_flags.txt
+/colabatch_flags.txt
+/colabsearch_flags.txt
+/neff_cache.json
