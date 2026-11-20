@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use LatentPPI, please cite it as below."
+title: "LatentPPI"
+version: "0.1.1"
+license: Apache-2.0
+repository-code: "https://github.com/fareedaabu/LatentPPI"
+date-released: "2026-11-19"
+authors:
+  - family-names: "Abu-Juam"
+    given-names: "Fareeda E."
+    affiliation: "Department of Computational and Systems Biology, University of Pittsburgh"
+    orcid: "https://orcid.org/0009-0002-2633-5311"
+  - family-names: "Koes"
+    given-names: "David R."
+    affiliation: "Department of Computational and Systems Biology, University of Pittsburgh"
+  - family-names: "Gur"
+    given-names: "Mert"
+    affiliation: "Department of Computational and Systems Biology, University of Pittsburgh"
+keywords:
+  - whole-proteome-screening
+  - ppi-prediction
+  - alphafold3
+  - protein-structure-prediction

@@ -1,3 +1,11 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/logo.png">
+    <img src="docs/assets/logo.png" alt="latentPPI Logo" width="1100">
+  </picture>
+</p>
+
+
 # 🧬 latentPPI: efficient whole-proteome screening
 
 > **Early release:** latentPPI is under active development. Features, configuration options, and documentation may change. AF3 image download and build-repository links are **coming soon**.
@@ -41,6 +49,8 @@ The [toy example](examples/toy_screen/WALKTHROUGH.md) pairs one synthetic target
 **First edit [full.yaml](examples/toy_screen/full.yaml)** with your AF3 paths, conda environment, CPU/GPU partitions, and GPU request. Then run from the repository root:
 
 ```bash
+conda activate latentppi
+
 mkdir -p examples/toy_screen/run
 cp examples/toy_screen/query_msa/target_small.a3m examples/toy_screen/run/target_small.a3m
 
@@ -62,6 +72,8 @@ The toy sequences and alignments test the workflow, not biological interactions.
 > **Prerelease:** The AF3 SIF image does not yet advance passing pairs automatically. After submitting the screen, start `advance --watch` and leave it running. It submits each batch of passing pairs for a fresh, ungated 10-recycle run.
 
 ```bash
+conda activate latentppi 
+
 mkdir -p examples/toy_screen/run_latent
 cp examples/toy_screen/query_msa/target_small.a3m examples/toy_screen/run_latent/
 python latentppi.py run examples/toy_screen/config.yaml
@@ -186,7 +198,7 @@ python latentppi.py advance config.yaml --watch
 
 Leave the watcher running. It checks for completed pairs with at least one passing seed and submits one advance batch at a time. Each pair gets a fresh, ungated AF3 run with its original input and seeds, **10 recycles by default**, and structure scoring. The default polling interval is 300 seconds. Restarting the watcher picks up new passes and skips pairs already assigned to a batch.
 
-**If the first pass has already finished**, run `python latentppi.py advance config.yaml` once. To preview the selection first, add `--no-submit`. To request a different recycle count, use `--recycles N` (1–10).
+**If the first pass has already finished**, run `python latentppi.py advance config.yaml` once. To preview the selection first, add `--no-submit`. To request a different recycle count, use `--recycles N`.
 
 Read `metrics/advanced_candidates.csv` for first-pass scores and the latest published advance status. The `advance_` score columns and `advance_rank` use the second run. Refresh the source CSV on demand with `status config.yaml --heavy`. Each batch has its own config, manifests, predictions and logs under `advance/batch-*/`. If a batch fails, inspect its Slurm jobs and resume it with `python latentppi.py run <batch>/advance.yaml`. A reserved batch with an unconfirmed submission is shown as `prepared`. Check the queue before resubmitting it.
 
@@ -252,8 +264,6 @@ python collect_metrics.py --root /path/to/screen \
 Results refresh at batch boundaries by default. In persistent mode, `output.refresh_seconds` controls the periodic interval. Use `output.known_interactors` to supply an NP accession list.
 
 See [METRICS.md](METRICS.md) for output columns and aggregation, and [CONFIG.md](CONFIG.md) for prepared input files, array limits, and runner settings.
-
-The [legacy tools](legacy/README.md) are available for reproducing older workflows.
 
 ## Tests
 

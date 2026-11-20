@@ -246,9 +246,10 @@ excluded on normal resume. `--force` retains its explicit rerun behavior.
 
 `retry_failed_once: true` retries failures once on the **final tier**, even when
 that was their initial tier. Initial routing never consumes the retry allowance.
-Do not combine tiers with `retry_partition` or `retry_gres`; those fields belong to
-the legacy two-resource retry configuration below. Tiers can also be enabled
-without retries. GPU availability validation checks every tier on `screen_cluster`.
+With tiers, omit `retry_partition` and `retry_gres`. The retry allowance carries
+over when you resume a run, including with `--force`. To use tiers without
+retries, leave `retry_failed_once` at its default of `false`.
+GPU availability validation checks every tier on `screen_cluster`.
 GPU types are selected through GRES; existing runner-header constraints still apply.
 
 Submission records and exported environments identify the tier and whether the
@@ -257,58 +258,13 @@ Slurm commands and creates no retry reservations. Existing configs/snapshots wit
 no tiers retain their old resource selection; enabling tiers requires an explicit
 config edit for a new/resumed submission after existing jobs have terminated.
 
-### Legacy one-time GPU fallback
-
-Optional one-time GPU fallback:
-
-```yaml
-cluster:
-  retry_failed_once: true
-  retry_partition: your_large_gpu_partition
-  retry_gres: gpu:your_large_gpu_type:1
-```
-
-Disabled by default. After the normal batches finish, unresolved pairs are submitted
-once using the fallback partition and GRES on `screen_cluster` (or the default
-cluster when unset). This covers any failure reason, including jobs that terminate
-before writing output. Completed and gate-killed pairs are not retried. The retry
-reruns the whole pair with the same scientific settings and records a new attempt.
-Other resources, including CPU count and wall time, retain their normal settings.
-CPU-only screening cannot enable GPU fallback.
-
-`latentppi_gpu_retries.json` persists the one-retry budget across dispatcher restarts
-and resumed runs. With fallback enabled, `--force` does not reset that budget. A
-failed fallback remains failed; there is no third automatic attempt. Slurm automatic
-requeue is disabled for these arrays. An ambiguous submission consumes its reserved
-retry to avoid duplicate jobs; explicit quota rejections release the reservation.
-Cleaning screen outputs removes this ledger along with the results.
-
-Validation checks both GPU requests against the node GRES inventory in the named
-partitions on the screen cluster. A missing GPU type or insufficient per-node count
-produces a warning. This checks configured GPU inventory, not current idle capacity,
-queue eligibility, or whether a complex will fit in GPU memory. Partition checks
-still report absent or down partitions as errors. Configure both fallback fields
-when enabling retries.
+### Slurm partitions and job settings
 
 `partition` remains a legacy alias for `screen_partition`; specify only one.
 Saved snapshots retain the internal `partition` field for compatibility.
 Both partition settings accept comma-separated strings; whitespace around names is
 trimmed and every named partition is validated on the selected cluster. Slurm
 selects an eligible partition; this does not submit a separate job to each one.
-
-For CPU AF3 screening:
-
-```yaml
-cluster:
-  screen_partition: your_cpu,your_cpu_alt
-  cpu_only: true
-  cpus_per_task: 16
-```
-
-CPU mode is explicit; partition names do not automatically enable it. It applies
-to either AF3 runner. Preparation, dispatch, and collection still use
-`inputs_partition`. CPU submissions use a Bash wrapper to bypass the runners'
-GPU SBATCH defaults. Any additional AF3 CPU flags depend on your chosen image.
 
 - Set `cluster.job_name: cool-protein` to display jobs as `cool-protein-inputs`,
 `cool-protein-dispatch`, `cool-protein-array`, and `cool-protein-collector`. The prefix
@@ -504,3 +460,8 @@ Checkpoint validation checks deserialization, not every container's inference co
 Submissions pass the recorded environment directly to the `sbatch` process with `--export=ALL`, so clients without `--export-file` are supported. Printed commands use `env -i` with shell-quoted assignments for the same behavior. Exports preserve PATH and basic runtime variables while excluding unrecorded inherited overrides. The scorer manifest is forwarded into the container through `LATENTPPI_MODEL_MANIFEST` and the Singularity/Apptainer environment variables; `AF3_SCORER_FILENAME` also identifies the rank-by checkpoint for legacy checks.
 
 `render` uses illustrative placeholder job IDs. For the current submission plan, use `run --no-submit` as shown in the [walkthrough](examples/toy_screen/WALKTHROUGH.md#2-copy-the-target-msa-and-preview). Actual runs and previews keep isolated settings and checkpoint copies under `latentppi_runs/`; checkout scripts and manually supplied manifests remain external references.
+
+### CPU Screening
+CPU screening is only available with AlphaFold3 v3.0.5, and not yet tested with latentPPI. While signiifcantly slower than on GPU, we aim to release this as an alternative reousrce to users.
+
+> **Early release:** latentPPI is under active development. This feature and its image are not yet tested or available. **coming soon**.
