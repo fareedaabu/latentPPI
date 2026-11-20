@@ -71,7 +71,7 @@ Bind-mounted directories may contain spaces, quotes, and globs, but **not commas
 | `output.metrics_dir` | `metrics` | Master, ranked survivors, optional known-interactor report and status |
 | `output.rank_confident_iptm` | `true` | Rank completed pairs by measured ipTM in pLDDT groups. Set to false to rank by the measured scorer metric. |
 | `output.refresh_seconds` | `300` | Chained mode: nonzero enables batch-boundary updates; persistent mode: periodic interval; `0` disables dispatcher updates |
-| `output.known_interactors` | Empty | Optional text file of NP accessions |
+| `output.known_interactors` | Empty | Optional text file with one target MSA filename per line, omitting `.a3m` |
 | `output.write_summary` | `true` | Write `summary.txt` with settings and counts |
 | `output.legacy_csv` | `false` | Also write the older CSV tables; their ranking remains prediction-based |
 

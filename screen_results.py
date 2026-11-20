@@ -52,7 +52,7 @@ def pair_candidates(config, pairs):
         row = candidates.setdefault(name, dict(system_name=name, preprocessing_status='ready'))
         row.update(pair)
         # Older screens have no accession columns. Recover explicit MSA references,
-        # never split compound names (NP accessions themselves contain underscores).
+        # since target names can contain underscores.
         source = Path(pair.get('json_path', ''))
         if not source.is_absolute():
             source = Path(config.inputs.output_base) / source
@@ -201,7 +201,9 @@ def build_master(config, pairs, frame, attempts, state, gate_metric, *, final=Fa
 
 
 def normalize_accession(text):
-    return re.sub(r'\.\d+$', '', text.strip().upper())
+    key = text.strip().upper()
+    # Preserve the existing version-insensitive lookup for RefSeq NP accessions.
+    return re.sub(r'^(NP_\d+)\.\d+$', r'\1', key)
 
 
 def known_interactors(path, master):
@@ -221,17 +223,15 @@ def known_interactors(path, master):
         key = normalize_accession(raw)
         row = dict(input_line=number, input_accession=raw, normalized_accession=key,
                    outcome='input problem', details='')
-        if not re.fullmatch(r'NP_\d+(?:\.\d+)?', raw.strip(), re.I):
-            row['details'] = 'Expected an NP accession, optionally followed by a numeric version.'
-        elif key in seen:
-            row['details'] = 'Duplicate accession (versions are treated as the same accession).'
+        if key in seen:
+            row['details'] = 'Duplicate target identifier after normalization.'
         else:
             seen.add(key)
             matches = lookup.get(key, [])
             if not matches:
                 row.update(outcome='not found in screened proteome', details='No matching candidate accession.')
             elif len(matches) > 1:
-                row['details'] = 'More than one screened target has this accession after removing the version; no match chosen.'
+                row['details'] = 'Multiple screened targets match this normalized identifier.'
             else:
                 result = matches[0]
                 for column in ('system_name', 'status', 'rank', 'gate_score', 'gate_rank', 'homodimer_rule_applied'):

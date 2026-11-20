@@ -57,6 +57,6 @@ cluster:
 output:
   metrics_dir: ./metrics
   refresh_seconds: 300
-  known_interactors: ''  # Optional NP accession list, relative to this YAML.
+  known_interactors: ''  # Optional target ID list (MSA filenames without .a3m), relative to this YAML.
   write_summary: true
   legacy_csv: false

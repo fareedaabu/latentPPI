@@ -68,4 +68,4 @@ LatentPPI:
 > The source code in this repository is released under the [Apache-2.0]
 > license. Files in `models/` are **excluded** from that license. They are
 > derived from AlphaFold 3 Output and are governed solely by the AlphaFold 3
-> Output Terms of Use; see `models/README.md`.
+> Output Terms of Use; see `models/checkpoint/CHECKPOINTS_README.md`.

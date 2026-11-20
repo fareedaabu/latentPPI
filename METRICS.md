@@ -92,16 +92,11 @@ rewrite inputs or erase previous attempts.
 
 ## Known interactors
 
-Set `output.known_interactors` to a text file containing one NP accession per line.
+Set `output.known_interactors` to a text file with one target ID per line. Use the target's filename in `inputs.proteome_msa_dir` with the final `.a3m` removed. For example, for `toy_target_001.a3m`, enter `toy_target_001`. You can copy IDs from the `target_accession` column of `screen_candidates.tsv`.
 
-- Surrounding whitespace and capitalization are ignored for matching.
-- A numeric version suffix is ignored: `NP_000537.3` matches `NP_000537`.
-- Blank lines are ignored.
-- Every nonblank line gets a result, including duplicates, malformed entries and accessions not found.
-- Duplicates are identified after normalization. Different listed versions of one accession are duplicates.
-- If several proteome candidates match after removing versions, the entry is reported as an input problem rather than arbitrarily choosing one.
+Matching ignores surrounding whitespace and capitalization. Punctuation is part of the ID, so `sample.1` and `sample.2` identify different targets. For RefSeq NP accessions, matching also ignores the numeric version suffix, so `NP_000537.3` matches `NP_000537`.
 
-The output retains original text and line numbers. Killed entries explicitly read “killed at gate” and retain their gate score/rank. Completed entries show their rank among successfully folded pairs. Target accessions are stored separately from chain order. An old screen with insufficient accession information can report no match; it does not guess from an ambiguous name.
+`known_interactors.tsv` skips blank lines and retains the original text and line number of every other entry. An unrecognized ID gets the outcome `not found in screened proteome`. A repeated ID after normalization or an ID matching multiple candidates gets `input problem`. Killed entries retain their gate score and gate rank. Completed entries show their rank among successfully folded pairs.
 
 ## Interrupted and resumed screens
 

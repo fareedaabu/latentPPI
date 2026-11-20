@@ -211,13 +211,30 @@ class ResultsTests(unittest.TestCase):
         self.timing('a')
         self.timing('gate', latentppi_scorer_gate_triggered=True,latentppi_scorer_gate_status='ok')
         known=self.root/'known.txt'
-        known.write_text(' np_000002 \nNP_000003.2\nNP_000002.9\nbad\nNP_999999\n\n')
+        known.write_text(' np_000002 \nNP_000003.2\nNP_000002.9\nunknown_target\nNP_999999\n\n')
         self.config.output.known_interactors=str(known)
         sw.screen_state(self.config, write_metrics=True)
         data=self.read('known_interactors.tsv')
         self.assertEqual(len(data),5)
-        self.assertEqual(data.outcome.tolist(),['completed','killed at gate','input problem','input problem','not found in screened proteome'])
+        self.assertEqual(data.outcome.tolist(),['completed','killed at gate','input problem','not found in screened proteome','not found in screened proteome'])
         self.assertEqual(data.input_line.tolist(),[1,2,3,4,5])
+
+    def test_known_interactors_use_custom_proteome_names(self):
+        for name in ('isolate_A-7.1', 'isolate_A-7.2', 'NP_123.1', 'NP_123.2'):
+            self.pair('bait_' + name, name)
+        known = self.root / 'known.txt'
+        known.write_text(' isolate_A-7.1 \n\nISOLATE_A-7.2\nisolate_a-7.1\nNP_123\nisolate_A-7\n')
+        self.config.output.known_interactors = str(known)
+        sw.screen_state(self.config, write_metrics=True)
+        data = self.read('known_interactors.tsv').set_index('input_line')
+        self.assertEqual(data.loc[1, 'input_accession'], ' isolate_A-7.1 ')
+        self.assertEqual(data.loc[1, 'system_name'], 'bait_isolate_A-7.1')
+        self.assertEqual(data.loc[3, 'system_name'], 'bait_isolate_A-7.2')
+        self.assertEqual(data.loc[4, 'outcome'], 'input problem')
+        self.assertIn('Duplicate', data.loc[4, 'details'])
+        self.assertEqual(data.loc[5, 'outcome'], 'input problem')
+        self.assertIn('Multiple', data.loc[5, 'details'])
+        self.assertEqual(data.loc[6, 'outcome'], 'not found in screened proteome')
 
     def test_seed_mean_whole_sample_row_and_incomplete_status(self):
         self.pair('multi','NP_1',seeds=(1,2))
