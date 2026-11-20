@@ -59,7 +59,7 @@ LatentPPI:
 
 - Abramson, J. et al. Accurate structure prediction of biomolecular interactions
   with AlphaFold 3. *Nature* (2024). https://doi.org/10.1038/s41586-024-07487-w
-- [LatentPPI citation]
+- Abu-Juam, F. E., Koes, D. R., & Gur, M. (2026). LatentPPI (Version 0.1.1) [Computer software]. https://github.com/fareedaabu/LatentPPI
 
 ---
 
